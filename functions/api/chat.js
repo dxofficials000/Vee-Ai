@@ -14,7 +14,14 @@ export async function onRequestPost(context) {
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents, systemInstruction }),
+        body: JSON.stringify({
+          contents,
+          systemInstruction,
+          generationConfig: {
+            maxOutputTokens: 700,
+            thinkingConfig: { thinkingBudget: 0 },
+          },
+        }),
       }
     );
 
