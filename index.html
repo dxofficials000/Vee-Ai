@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
+<title>Vee</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="vee.png" type="image/png" />
+<link rel="apple-touch-icon" href="vee.png" />
+<meta name="theme-color" content="#db2777" />
+
+<!-- PASTE YOUR GOOGLE SEARCH CONSOLE VERIFICATION META TAG HERE (after hosting) -->
+<!-- It'll look like: <meta name="google-site-verification" content="xxxxxxxxxxxx" /> -->
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+  }
+  body {
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    background: linear-gradient(160deg, #831843 0%, #db2777 45%, #f472b6 100%);
+    display: flex;
+    justify-content: center;
+  }
+
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(6px);
+    opacity: 0.4;
+    z-index: 0;
+    pointer-events: none;
+    background: #fbcfe8;
+  }
+  .blob1 { width: 200px; height: 200px; top: -60px; left: -60px; animation: float1 6s ease-in-out infinite; }
+  .blob2 { width: 160px; height: 160px; bottom: 15%; right: -50px; animation: float2 7s ease-in-out infinite; }
+  .blob3 { width: 120px; height: 120px; top: 45%; left: -40px; animation: float3 5s ease-in-out infinite; }
+  .blob4 { width: 110px; height: 110px; bottom: -30px; left: 30%; animation: float1 8s ease-in-out infinite; }
+  .blob5 { width: 90px; height: 90px; top: 15%; right: 10%; animation: float3 6.5s ease-in-out infinite; }
+
+  @keyframes float1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(60px, 80px); } }
+  @keyframes float2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-70px, -50px); } }
+  @keyframes float3 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(50px, -70px); } }
+
+  /* shooting stars */
+  .star {
+    position: fixed;
+    width: 3px;
+    height: 3px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 6px 2px rgba(255,255,255,0.8);
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .star::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.9), transparent);
+    transform: translateY(-50%);
+  }
+  .star1 { top: 10%; left: 100%; animation: shoot 4s linear infinite; animation-delay: 0.5s; }
+  .star2 { top: 30%; left: 100%; animation: shoot 5s linear infinite; animation-delay: 2.3s; }
+  .star3 { top: 60%; left: 100%; animation: shoot 4.5s linear infinite; animation-delay: 4s; }
+
+  @keyframes shoot {
+    0% { transform: translate(0, 0); opacity: 0; }
+    5% { opacity: 1; }
+    20% { transform: translate(-220px, 160px); opacity: 0; }
+    100% { transform: translate(-220px, 160px); opacity: 0; }
+  }
+
+  .app {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 1;
+  }
+
+  .app-header { padding: 18px 16px 14px; text-align: center; flex-shrink: 0; }
+  .brand-row { display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .logo-mark {
+    width: 30px; height: 30px; border-radius: 9px;
+    background: linear-gradient(135deg, #fff, #fbcfe8);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  }
+  .brand-name { font-size: 12px; letter-spacing: 2px; color: rgba(255,255,255,0.75); text-transform: uppercase; font-weight: 600; }
+  .app-header h1 { margin: 2px 0 0; font-size: 26px; color: #fff; font-weight: 700; letter-spacing: 0.5px; }
+  .subtitle { margin: 2px 0 0; color: rgba(255,255,255,0.7); font-size: 13px; }
+  .console-link { display: inline-block; margin-top: 8px; font-size: 11px; color: rgba(255,255,255,0.6); text-decoration: underline; }
+
+  .chat-window { flex: 1; overflow-y: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; -webkit-overflow-scrolling: touch; }
+  .message { display: flex; }
+  .message.user { justify-content: flex-end; }
+  .message.vee { justify-content: flex-start; }
+  .bubble { max-width: 78%; padding: 11px 15px; border-radius: 18px; font-size: 15px; line-height: 1.45; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .bubble img { max-width: 100%; border-radius: 10px; display: block; margin-top: 6px; }
+  .message.user .bubble { background: #fff; color: #831843; border-bottom-right-radius: 4px; }
+  .message.vee .bubble { background: rgba(255,255,255,0.18); color: #fff; border: 1px solid rgba(255,255,255,0.25); backdrop-filter: blur(4px); border-bottom-left-radius: 4px; }
+  .bubble.typing { display: flex; gap: 4px; align-items: center; padding: 13px 16px; }
+  .bubble.typing span { width: 6px; height: 6px; border-radius: 50%; background: #fff; animation: bounce 1.2s infinite; }
+  .bubble.typing span:nth-child(2) { animation-delay: 0.2s; }
+  .bubble.typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
+
+  .image-preview { padding: 0 12px; flex-shrink: 0; }
+  .image-preview img { height: 60px; border-radius: 8px; border: 2px solid #fff; }
+  .image-preview .remove-img { color: #fff; font-size: 12px; margin-left: 8px; text-decoration: underline; }
+
+  .chat-form { display: flex; align-items: center; padding: 12px; gap: 8px; flex-shrink: 0; background: rgba(255,255,255,0.08); border-top: 1px solid rgba(255,255,255,0.15); }
+  .icon-btn { background: rgba(255,255,255,0.2); border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; color: #fff; flex-shrink: 0; }
+  .chat-form input[type="text"] { flex: 1; padding: 12px 16px; border: none; border-radius: 22px; font-size: 15px; background: rgba(255,255,255,0.92); color: #831843; }
+  .chat-form input::placeholder { color: #c9a1b7; }
+  .chat-form input:focus { outline: none; }
+  .chat-form button[type="submit"] { padding: 0 22px; border: none; border-radius: 22px; background: #fff; color: #db2777; font-weight: 600; height: 40px; flex-shrink: 0; }
+  .chat-form button:disabled { opacity: 0.5; }
+</style>
+</head>
+<body>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+<div class="blob blob4"></div>
+<div class="blob blob5"></div>
+<div class="star star1"></div>
+<div class="star star2"></div>
+<div class="star star3"></div>
+
+<div class="app" id="app">
+  <header class="app-header">
+    <div class="brand-row">
+      <div class="logo-mark"><img src="vee.png" alt="Vee" width="20" height="20" /></div>
+      <span class="brand-name">DxOfficials</span>
+    </div>
+    <h1>Vee AI</h1>
+    <p class="subtitle">Ask me anything</p>
+  </header>
+  <div id="chat-window" class="chat-window">
+    <div class="message vee"><div class="bubble">Hey! I'm Vee. What's on your mind?</div></div>
+  </div>
+  <div id="image-preview" class="image-preview" style="display:none;"></div>
+  <form id="chat-form" class="chat-form">
+    <button type="button" id="upload-btn" class="icon-btn" title="Attach image">📷</button>
+    <input type="file" id="file-input" accept="image/*" style="display:none;" />
+    <input id="chat-input" type="text" placeholder="Type a message..." autocomplete="off" />
+    <button type="submit">Send</button>
+  </form>
+</div>
+
+<script>
+// The API key used to live here — it now lives safely on the server instead,
+// in Cloudflare's dashboard, never visible in this file or to visitors.
+
+const SYSTEM_PROMPT = `You are Vee, a friendly, honest AI assistant built by DxOfficials, specifically to help Edalere Ifeoluwapo Valentina — though anyone can use you. You're designed to solve real-life problems and interact with people in a warm, helpful way. You can also look at photos people send you and explain them, including math problems, diagrams, or anything else in the image.
+
+Personality:
+- Warm, friendly, conversational — like a helpful friend, not a formal bot.
+- Honest: if you don't know something, say so. Never make things up.
+- Keep responses clear and to the point unless the user wants more depth.
+- Reply quickly and naturally, without unnecessary padding.
+
+Important — identity rules:
+- Do NOT mention DxOfficials, David Alieze, or that you were made specifically for Valentina, unless the user directly asks who made you or who you were built for.
+- If asked who made you or about DxOfficials, say: "DxOfficials is a tech brand owned by David Alieze." If they want more detail than that, tell them to look it up on Google.
+- If asked who you were specifically built for, you can mention Edalere Ifeoluwapo Valentina — but also clarify that anyone is welcome to use you.
+- Otherwise, just focus on being a helpful, friendly assistant.`;
+
+const appEl = document.getElementById("app");
+const chatWindow = document.getElementById("chat-window");
+const chatForm = document.getElementById("chat-form");
+const chatInput = document.getElementById("chat-input");
+const uploadBtn = document.getElementById("upload-btn");
+const fileInput = document.getElementById("file-input");
+const imagePreview = document.getElementById("image-preview");
+const conversation = [];
+let pendingImage = null; // { mimeType, data (base64) }
+
+function fitToViewport() {
+  const vv = window.visualViewport;
+  const height = vv ? vv.height : window.innerHeight;
+  appEl.style.height = height + "px";
+  window.scrollTo(0, 0);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+if (window.visualViewport) {
+  window.visualViewport.addEventListener("resize", fitToViewport);
+  window.visualViewport.addEventListener("scroll", fitToViewport);
+}
+window.addEventListener("resize", fitToViewport);
+fitToViewport();
+chatInput.addEventListener("focus", () => {
+  setTimeout(fitToViewport, 250);
+  setTimeout(fitToViewport, 500);
+});
+
+uploadBtn.addEventListener("click", () => fileInput.click());
+
+fileInput.addEventListener("change", () => {
+  const file = fileInput.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const base64 = reader.result.split(",")[1];
+    pendingImage = { mimeType: file.type, data: base64 };
+    imagePreview.style.display = "block";
+    imagePreview.innerHTML = "";
+    const img = document.createElement("img");
+    img.src = reader.result;
+    const removeBtn = document.createElement("span");
+    removeBtn.className = "remove-img";
+    removeBtn.textContent = "Remove";
+    removeBtn.onclick = () => {
+      pendingImage = null;
+      imagePreview.style.display = "none";
+      fileInput.value = "";
+    };
+    imagePreview.appendChild(img);
+    imagePreview.appendChild(removeBtn);
+  };
+  reader.readAsDataURL(file);
+});
+
+function addMessage(text, sender, imageDataUrl) {
+  const messageEl = document.createElement("div");
+  messageEl.className = `message ${sender}`;
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  if (text) bubble.appendChild(document.createTextNode(text));
+  if (imageDataUrl) {
+    const img = document.createElement("img");
+    img.src = imageDataUrl;
+    bubble.appendChild(img);
+  }
+  messageEl.appendChild(bubble);
+  chatWindow.appendChild(messageEl);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
+function showTyping() {
+  const messageEl = document.createElement("div");
+  messageEl.className = "message vee";
+  messageEl.id = "typing-indicator";
+  messageEl.innerHTML = `<div class="bubble typing"><span></span><span></span><span></span></div>`;
+  chatWindow.appendChild(messageEl);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+function hideTyping() {
+  const el = document.getElementById("typing-indicator");
+  if (el) el.remove();
+}
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch((err) => console.log("SW registration failed:", err));
+  });
+}
+
+async function askVee(payload, attempt = 1) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 12000);
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+    return await response.json();
+  } catch (err) {
+    clearTimeout(timeout);
+    if (attempt < 2) {
+      return askVee(payload, attempt + 1); // one silent retry on network hiccup
+    }
+    throw err;
+  }
+}
+
+chatForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const userText = chatInput.value.trim();
+  if (!userText && !pendingImage) return;
+
+  const imageForDisplay = pendingImage ? `data:${pendingImage.mimeType};base64,${pendingImage.data}` : null;
+  addMessage(userText, "user", imageForDisplay);
+
+  const parts = [];
+  if (userText) parts.push({ text: userText });
+  if (pendingImage) parts.push({ inline_data: { mime_type: pendingImage.mimeType, data: pendingImage.data } });
+  conversation.push({ role: "user", parts });
+
+  chatInput.value = "";
+  pendingImage = null;
+  imagePreview.style.display = "none";
+  imagePreview.innerHTML = "";
+  fileInput.value = "";
+
+  const btn = chatForm.querySelector('button[type="submit"]');
+  btn.disabled = true;
+  showTyping();
+
+  try {
+    const data = await askVee({
+      contents: conversation,
+      systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+    });
+    hideTyping();
+
+    if (data.error) {
+      console.error("Gemini API error:", data.error);
+      addMessage("Hmm, I'm having trouble thinking right now. Try that again in a moment?", "vee");
+      return;
+    }
+
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!reply) {
+      console.error("Empty response:", data);
+      addMessage("Sorry, I didn't quite catch that — try asking again?", "vee");
+      return;
+    }
+
+    addMessage(reply, "vee");
+    conversation.push({ role: "model", parts: [{ text: reply }] });
+  } catch (err) {
+    hideTyping();
+    console.error(err);
+    addMessage("Looks like the connection dropped. Give it another try?", "vee");
+  } finally {
+    btn.disabled = false;
+    chatInput.focus();
+  }
+});
+</script>
+</body>
+</html>
