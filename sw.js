@@ -1,4 +1,4 @@
-const CACHE_NAME = "vee-cache-v2";
+const CACHE_NAME = "vee-cache-v3";
 const FILES_TO_CACHE = ["/", "./index.html", "./manifest.json", "./vee.png"];
 
 self.addEventListener("install", (event) => {
