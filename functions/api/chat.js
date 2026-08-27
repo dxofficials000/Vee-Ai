@@ -41,7 +41,7 @@ export async function onRequestPost(context) {
           body: JSON.stringify({
             contents,
             systemInstruction,
-            generationConfig: { maxOutputTokens: 700 },
+            generationConfig: { maxOutputTokens: 3000 },
           }),
         }
       );
